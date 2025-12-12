@@ -437,16 +437,10 @@ def nn_get_search_params():
     ###########################################################################
     # Replace "pass" statement with your code
 
-    learning_rates = [1e-2, 5e-2, 1e-1, 5e-1] # 4 options
-    
-    # Increase capacity significantly to combat underfitting observed in 2.0.
-    hidden_sizes = [256, 512, 1024] # 3 options
-    
-    # L2 regularization strength. Essential for preventing overfitting on large models.
-    regularization_strengths = [1e-4, 1e-3, 5e-3] # 3 options
-    
-    # Search two common decay rates (0.95 is standard, 0.99 is slower/less aggressive).
-    learning_rate_decays = [0.95, 0.99] # 2 options
+    learning_rates = [1e-2, 5e-2, 1e-1, 5e-1] 
+    hidden_sizes = [256, 512, 1024] 
+    regularization_strengths = [1e-4, 1e-3, 5e-3] 
+    learning_rate_decays = [0.95, 0.99] 
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -513,10 +507,8 @@ def find_best_net(
     X_val   = data_dict["X_val"]
     y_val   = data_dict["y_val"]
 
-
     input_size = X_train.shape[1]
     num_classes = int(y_train.max().item()) + 1
-
 
     (learning_rates,
      hidden_sizes,
@@ -525,8 +517,6 @@ def find_best_net(
 
     num_iters = 5000
     batch_size = 256
-
-
     #############################################################################
     # TODO: Tune hyperparameters using the validation set.                      #
     #############################################################################
