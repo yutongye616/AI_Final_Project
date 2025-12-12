@@ -1,2 +1,8 @@
 .DS_Store
 *.zip
+
+# datasets / large files
+*.tar.gz
+*.zip
+cifar-10-*
+data/
