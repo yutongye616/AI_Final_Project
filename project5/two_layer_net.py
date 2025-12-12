@@ -149,14 +149,10 @@ def nn_forward_pass(params: Dict[str, torch.Tensor], X: torch.Tensor):
     # shape (N, C).                                                            #
     ############################################################################
     # Replace "pass" statement with your code
-    layer1_linear = X.mm(W1) + b1     
-
-    layer1_relu = layer1_linear.clamp(min=0)
-
-    scores = layer1_relu.mm(W2) + b2  
-
-    hidden = layer1_relu
-
+    Z1 = torch.mm(X, W1) + b1     
+    A1 = Z1.clamp(min=0)
+    scores = torch.mm(A1, W2) + b2  
+    hidden = A1
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -441,10 +437,16 @@ def nn_get_search_params():
     ###########################################################################
     # Replace "pass" statement with your code
 
-    learning_rates = [1e-3, 2e-3]
-    hidden_sizes = [512, 1024]
-    regularization_strengths = [1e-5, 1e-4, 1e-3]
-    learning_rate_decays = [0.99]
+    learning_rates = [1e-2, 5e-2, 1e-1, 5e-1] # 4 options
+    
+    # Increase capacity significantly to combat underfitting observed in 2.0.
+    hidden_sizes = [256, 512, 1024] # 3 options
+    
+    # L2 regularization strength. Essential for preventing overfitting on large models.
+    regularization_strengths = [1e-4, 1e-3, 5e-3] # 3 options
+    
+    # Search two common decay rates (0.95 is standard, 0.99 is slower/less aggressive).
+    learning_rate_decays = [0.95, 0.99] # 2 options
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
