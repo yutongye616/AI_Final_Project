@@ -456,10 +456,10 @@ def nn_get_search_params():
     ###########################################################################
     # Replace "pass" statement with your code
 
-    learning_rates = [1e-3, 2e-3, 3e-3]        # good range for CIFAR-10 MLP
-    hidden_sizes   = [512, 1024]               # more capacity
-    regularization_strengths = [0.0, 1e-5, 1e-4]  # very light or no reg
-    learning_rate_decays     = [0.99] 
+    learning_rates = [5e-4, 1e-3, 2e-3, 5e-3]
+    hidden_sizes = [256, 512, 1024]
+    regularization_strengths = [0.0, 1e-5, 1e-4, 1e-3]
+    learning_rate_decays = [0.95, 0.99, 1.0]
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################

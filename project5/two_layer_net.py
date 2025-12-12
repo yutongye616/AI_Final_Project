@@ -149,17 +149,12 @@ def nn_forward_pass(params: Dict[str, torch.Tensor], X: torch.Tensor):
     # shape (N, C).                                                            #
     ############################################################################
     # Replace "pass" statement with your code
+    layer1_linear = X.mm(W1) + b1     
 
-    # First fully connected layer: (N, D) @ (D, H) -> (N, H)
-    layer1_linear = X.mm(W1) + b1     # b1 broadcasts: (H,) → (N, H)
-
-    # ReLU activation
     layer1_relu = layer1_linear.clamp(min=0)
 
-    # Second fully connected layer: (N, H) @ (H, C) -> (N, C)
-    scores = layer1_relu.mm(W2) + b2  # b2: (C,) → (N, C)
+    scores = layer1_relu.mm(W2) + b2  
 
-    # Hidden representation after ReLU
     hidden = layer1_relu
 
     ###########################################################################
@@ -230,27 +225,20 @@ def nn_forward_backward(
     # (see `Numeric Stability`` in http://cs231n.github.io/linear-classify/).  #
     ############################################################################
     # Replace "pass" statement with your code
-    # 1) Softmax with numeric stability: subtract max per row
-    # scores: (N, C)
+
     scores_shifted = scores - scores.max(dim=1, keepdim=True).values  
-    # (N, C)
     exp_scores = scores_shifted.exp()                                
     sum_exp = exp_scores.sum(dim=1, keepdim=True)                     
     softmax = exp_scores / sum_exp                                    
 
-    # 2) Cross-entropy loss
-    # pick probability of the correct class for each sample
     idx = torch.arange(N, device=scores.device)
     correct_class_probs = softmax[idx, y]                            
 
-    # avoid log(0) with clamp
     log_probs = correct_class_probs.clamp(min=1e-12).log()
-    data_loss = -log_probs.mean()     # average over batch
+    data_loss = -log_probs.mean()     
 
-    # 3) L2 regularization on W1 and W2 (NO 1/2 factor)
     reg_loss = reg * (W1.pow(2).sum() + W2.pow(2).sum())
 
-    # total loss
     loss = data_loss + reg_loss
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -361,7 +349,6 @@ def nn_train(
         #########################################################################
         # Replace "pass" statement with your code
         for name in params:
-            # SGD update: w <- w - lr * dw
             params[name] = params[name] - learning_rate * grads[name]
         #########################################################################
         #                             END OF YOUR CODE                          #
@@ -419,11 +406,9 @@ def nn_predict(
     ###########################################################################
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
-    # Replace "pass" statement with your code
-    scores = loss_func(params, X)   # shape: (N, C)
 
-    # Pick the class with the highest score for each sample
-    y_pred = scores.argmax(dim=1)   # shape: (N,)
+    scores = loss_func(params, X)   
+    y_pred = scores.argmax(dim=1)   
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
@@ -456,10 +441,10 @@ def nn_get_search_params():
     ###########################################################################
     # Replace "pass" statement with your code
 
-    learning_rates = [1e-3, 2e-3, 3e-3]        # good range for CIFAR-10 MLP
-    hidden_sizes   = [512, 1024]               # more capacity
-    regularization_strengths = [0.0, 1e-5, 1e-4]  # very light or no reg
-    learning_rate_decays     = [0.99] 
+    learning_rates = [1e-3, 2e-3]
+    hidden_sizes = [512, 1024]
+    regularization_strengths = [1e-5, 1e-4, 1e-3]
+    learning_rate_decays = [0.99]
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -520,27 +505,24 @@ def find_best_net(
     # automatically as was done in Assignment 4.                                #
     #############################################################################
     # Replace "pass" statement with your code
-    # Unpack data
+
     X_train = data_dict["X_train"]
     y_train = data_dict["y_train"]
     X_val   = data_dict["X_val"]
     y_val   = data_dict["y_val"]
 
-    #below code to replace pass
 
-    # Infer sizes
     input_size = X_train.shape[1]
     num_classes = int(y_train.max().item()) + 1
 
-    # Get hyperparameter candidates
+
     (learning_rates,
      hidden_sizes,
      regularization_strengths,
      learning_rate_decays) = get_param_set_fn()
 
-    # You can adjust these if needed
-    num_iters = 8000      # more training
-    batch_size = 200      # smaller batch → better SGD updates
+    num_iters = 12000
+    batch_size = 128
 
 
     #############################################################################
@@ -550,16 +532,14 @@ def find_best_net(
         for lr in learning_rates:
             for reg in regularization_strengths:
                 for lr_decay in learning_rate_decays:
-                    # Create a new network for this hyperparameter combo
                     net = TwoLayerNet(
                         input_size,
                         hs,
                         num_classes,
                         dtype=X_train.dtype,
-                        device=X_train.device,   # same device as data
+                        device=X_train.device,   
                     )
 
-                    # Train the network
                     stats = net.train(
                         X_train, y_train,
                         X_val, y_val,
@@ -571,17 +551,13 @@ def find_best_net(
                         verbose=False,
                     )
 
-                    # Compute validation accuracy
                     y_val_pred = net.predict(X_val)
                     val_acc = 100.0 * (y_val_pred == y_val).double().mean().item()
 
-                    # Keep the best model
                     if val_acc > best_val_acc:
                         best_val_acc = val_acc
                         best_net = net
                         best_stat = stats
-                        # Optional: uncomment to see progress
-                        # print(f"New best: hs={hs}, lr={lr}, reg={reg}, decay={lr_decay}, val_acc={val_acc:.2f}%")
     #############################################################################
     #                               END OF YOUR CODE                            #
     #############################################################################
