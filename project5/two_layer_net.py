@@ -521,8 +521,8 @@ def find_best_net(
      regularization_strengths,
      learning_rate_decays) = get_param_set_fn()
 
-    num_iters = 12000
-    batch_size = 128
+    num_iters = 20000
+    batch_size = 256
 
 
     #############################################################################
