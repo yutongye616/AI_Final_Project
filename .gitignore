@@ -6,3 +6,7 @@
 *.zip
 cifar-10-*
 data/
+
+# large datasets
+project5/cifar-10-*
+*.tar.gz
